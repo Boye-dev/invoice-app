@@ -9,6 +9,7 @@ import {
 import fileUpload from "../../assets/fileUpload.png";
 import { FaTrash } from "react-icons/fa";
 import { FileIcon, defaultStyles } from "react-file-icon";
+import clsx from "clsx";
 
 type FileWithUrl = File & {
   url: string;
@@ -18,10 +19,19 @@ interface IFileUpload {
   onChange?: (files: FileWithUrl[] | null) => void;
   name: string;
   accept?: string;
+  label?: string;
+  labelStyles?: string;
 }
 const FileUpload = forwardRef(
   (props: IFileUpload, ref: ForwardedRef<HTMLInputElement>) => {
-    const { multiple = false, onChange, name } = props;
+    const {
+      multiple = false,
+      onChange,
+      name,
+      label,
+      accept,
+      labelStyles,
+    } = props;
     const [allFiles, setAllFiles] = useState<FileWithUrl[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
@@ -61,8 +71,16 @@ const FileUpload = forwardRef(
       setAllFiles((prev) => prev.filter((v) => v.name !== file.name));
       if (inputRef.current) inputRef.current.value = "";
     };
+    const combinedLabelStles = clsx("font-bold", {
+      [`${labelStyles}`]: Boolean(labelStyles),
+    });
     return (
       <>
+        {label && (
+          <label className={combinedLabelStles} htmlFor={name}>
+            {label}
+          </label>
+        )}
         <label htmlFor={name} className="w-full">
           <div className="border border-black border-dashed w-full min-h-10 rounded-sm flex flex-col gap-4 items-center justify-center py-5 cursor-pointer">
             <img src={fileUpload} alt="fileUpload" className="w-20 h-20" />
@@ -73,6 +91,7 @@ const FileUpload = forwardRef(
           ref={inputRef}
           multiple={multiple}
           type="file"
+          accept={accept}
           className="hidden"
           id={name}
           name={name}

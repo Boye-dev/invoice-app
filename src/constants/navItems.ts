@@ -1,4 +1,4 @@
-import { FaFileInvoice, FaUser } from "react-icons/fa";
+import { FaFileInvoice, FaUser, FaUsers } from "react-icons/fa";
 import { GiReceiveMoney } from "react-icons/gi";
 import { DASHBOARD_PATHS } from "./routes";
 import { FaCartShopping } from "react-icons/fa6";
@@ -14,6 +14,11 @@ export const navItems = [
     icon: GiReceiveMoney,
     name: "Quatations",
     path: DASHBOARD_PATHS.QUOTATIONS,
+  },
+  {
+    icon: FaUsers,
+    name: "Clients",
+    path: DASHBOARD_PATHS.CLIENTS,
   },
   {
     icon: FaCartShopping,

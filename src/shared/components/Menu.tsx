@@ -112,7 +112,7 @@ const Menu = forwardRef((props: IMenu, ref: ForwardedRef<HTMLInputElement>) => {
           </div>
           <div
             ref={dropDownRef}
-            className={`h-auto min-w-20 fixed top-0 left-0 bg-white py-2 rounded-md shadow-md max-h-[300px] overflow-auto z-[2000] ${
+            className={`h-auto min-w-20 fixed top-0 left-0 bg-white py-2 rounded-md shadow-md max-h-[300px] overflow-auto z-[4000] ${
               !open ? "hidden" : ""
             } `}
             style={{
@@ -121,7 +121,7 @@ const Menu = forwardRef((props: IMenu, ref: ForwardedRef<HTMLInputElement>) => {
             }}
           >
             {data.map((item) => (
-              <>
+              <div key={item.label}>
                 {item.render ? (
                   <div className="w-full">
                     {item.render(item) as React.ReactNode}
@@ -143,7 +143,7 @@ const Menu = forwardRef((props: IMenu, ref: ForwardedRef<HTMLInputElement>) => {
                   </div>
                 )}
                 <hr className="last:hidden" />
-              </>
+              </div>
             ))}
           </div>
         </div>

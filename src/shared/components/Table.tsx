@@ -70,6 +70,7 @@ const Table = <T extends { id: string }>(props: ITable<T>) => {
         )}
         {columns.map((col) => (
           <td
+            key={col.key as string}
             className={`py-3 border-b`}
             style={{ width: `calc(100% / ${columns.length})` }}
           >

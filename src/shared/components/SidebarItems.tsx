@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 interface ISidebarItems {
   data: { icon: IconType; name: string; path?: string; onClick?: () => void };
   active: boolean;
+  close: () => void;
 }
-const SidebarItems = ({ data, active }: ISidebarItems) => {
+const SidebarItems = ({ data, active, close }: ISidebarItems) => {
   const navigate = useNavigate();
   const Icon = data.icon;
   const baseStles =
@@ -17,7 +18,10 @@ const SidebarItems = ({ data, active }: ISidebarItems) => {
     <>
       <div
         className={combinedStles}
-        onClick={() => (data.onClick ? data.onClick() : navigate(data.path!))}
+        onClick={() => {
+          close();
+          data.onClick ? data.onClick() : navigate(data.path!);
+        }}
       >
         <Icon className="text-2xl" />
         <p className="ml-5">{data.name}</p>

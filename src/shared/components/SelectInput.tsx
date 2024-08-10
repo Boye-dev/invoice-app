@@ -257,7 +257,7 @@ const SelectInput = forwardRef(
 
             <div
               ref={dropDownRef}
-              className={`h-auto fixed bg-white py-2 rounded-md shadow-md max-h-[300px] overflow-auto z-[2000] ${
+              className={`h-auto fixed bg-white py-2 rounded-md shadow-md max-h-[300px] overflow-auto z-[4000] ${
                 !open ? "hidden" : ""
               }`}
               style={{
@@ -266,7 +266,7 @@ const SelectInput = forwardRef(
               }}
             >
               {data.map((item) => (
-                <>
+                <div key={item.label}>
                   <div
                     className="cursor-pointer flex items-center hover:bg-slate-100"
                     key={item.value}
@@ -289,7 +289,7 @@ const SelectInput = forwardRef(
                     )}
                   </div>
                   <hr className="last:hidden" />
-                </>
+                </div>
               ))}
             </div>
           </div>

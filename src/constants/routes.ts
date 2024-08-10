@@ -7,10 +7,15 @@ export const AUTH_ROUTES = {
 export const DASHBOARD_PATHS = {
   INVOICES: "/invoices",
   QUOTATIONS: "/quotation",
-  PRODUCTS: "/products",
   NEW_INVOICE: "/new-invoice",
   NEW_QUOTATION: "/new-quotation",
   EDIT_INVOICE: "/edit-invoice",
   EDIT_QUOTATION: "/edit-quotation",
   PROFILE: "/profile",
+  CLIENTS: "/clients",
+  NEW_CLIENT: "/new-client",
+  EDIT_CLIENT: "/edit-client",
+  PRODUCTS: "/products",
+  NEW_PRODUCT: "/new-product",
+  EDIT_PRODUCT: "/edit-product",
 };
