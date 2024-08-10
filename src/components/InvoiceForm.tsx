@@ -92,7 +92,7 @@ const InvoiceForm = ({ quotation }: { quotation?: boolean }) => {
                 value: 30,
               },
             ]}
-            onChange={(val) => {}}
+            onChange={(val) => console.log(val)}
           />
           {!quotation && (
             <SelectInput
@@ -138,7 +138,7 @@ const InvoiceForm = ({ quotation }: { quotation?: boolean }) => {
                   value: "INSTALLMENT",
                 },
               ]}
-              onChange={(val) => {}}
+              onChange={(val) => console.log(val)}
             />
           )}
         </div>
