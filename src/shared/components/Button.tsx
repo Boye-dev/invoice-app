@@ -11,6 +11,7 @@ interface IButton {
   onClick?: () => void;
   leftSection?: React.ReactNode;
   rightSection?: React.ReactNode;
+  buttonStyles?: string;
 }
 const Button = (props: IButton) => {
   const {
@@ -22,14 +23,15 @@ const Button = (props: IButton) => {
     onClick,
     leftSection,
     rightSection,
+    buttonStyles,
   } = props;
-
   const baseButtonStyles = `rounded-md px-5 h-12 outline-none focus:shadow focus:opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed hover:opacity-80 disabled:opacity-100 disabled:text-gray-300 `;
   const combinedButtonStyles = clsx(baseButtonStyles, {
+    "w-full": fullWidth,
+    [`${buttonStyles}`]: Boolean(buttonStyles),
     [`text-blue-900`]: variant === "text" || variant === "outlined",
     [`border border-solid border-blue-900`]: variant === "outlined",
     "text-white bg-blue-900": variant === "contained",
-    "w-full": fullWidth,
     "h-14": size === "lg",
     "h-16": size === "xlg",
   });

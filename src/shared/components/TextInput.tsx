@@ -15,6 +15,7 @@ interface ITextInput {
   onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   labelStyles?: string;
   inputStyles?: string;
+  inputDivStyles?: string;
   size?: "md" | "lg" | "xlg";
   rightSection?: React.ReactNode;
   leftSection?: React.ReactNode;
@@ -38,6 +39,7 @@ const TextInput = forwardRef(
       leftSection,
       rightSection,
       size = "md",
+      inputDivStyles,
     } = props;
     const baseInputStyles = `w-full border border-solid border-gray-900 outline-none p-3 px-4 rounded-lg text-sm placeholder:text-gray-400 focus:border-blue-400 focus:border-2 after:c`;
     const combinedInputStles = clsx(baseInputStyles, {
@@ -49,12 +51,13 @@ const TextInput = forwardRef(
 
     const inputDiv = "flex flex-col gap-1 ";
     const combinedInputDiv = clsx(inputDiv, {
+      [`${inputDivStyles}`]: Boolean(inputDivStyles),
       "w-full": fullWidth,
       "w-auto": !fullWidth,
     });
 
     const combinedLabelStles = clsx("font-bold", {
-      [`${labelStyles}`]: Boolean(inputStyles),
+      [`${labelStyles}`]: Boolean(labelStyles),
     });
     return (
       <>
@@ -64,7 +67,7 @@ const TextInput = forwardRef(
               {label}
             </label>
           )}
-          <div className="w-full h-auto relative">
+          <div className="h-auto relative">
             {leftSection && (
               <div className="absolute flex items-center top-4 left-3">
                 {leftSection}
@@ -84,7 +87,7 @@ const TextInput = forwardRef(
               className={combinedInputStles}
             />
             {rightSection && (
-              <div className="absolute flex items-center top-4 right-3 ">
+              <div className="absolute  flex items-center top-4 right-3 ">
                 {rightSection}
               </div>
             )}

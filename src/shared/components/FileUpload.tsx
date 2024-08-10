@@ -70,7 +70,7 @@ const FileUpload = forwardRef(
           </div>
         </label>
         <input
-          ref={ref}
+          ref={inputRef}
           multiple={multiple}
           type="file"
           className="hidden"
