@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React from "react";
-import { FaTruckLoading } from "react-icons/fa";
 import Loader from "./Loader";
 
 interface IButton {
