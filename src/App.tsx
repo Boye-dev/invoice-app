@@ -22,6 +22,11 @@ import Products from "./pages/Products";
 import NewProduct from "./pages/NewProduct";
 import EditProduct from "./pages/EditClient";
 import Profile from "./pages/Profile";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Verify from "./pages/Auth/Verify";
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 function App() {
   const router = createBrowserRouter([
@@ -30,8 +35,17 @@ function App() {
       element: <Navigate to={AUTH_ROUTES.LOGIN} />,
     },
     {
+      path: AUTH_ROUTES.VERIFY,
+      element: <Verify />,
+    },
+
+    {
       element: <AuthLayout />,
       children: [
+        {
+          path: AUTH_ROUTES.RESET_PASSWORD,
+          element: <ResetPassword />,
+        },
         {
           path: AUTH_ROUTES.LOGIN,
           element: <Login />,
@@ -112,7 +126,19 @@ function App() {
       ],
     },
   ]);
-  return <RouterProvider router={router} />;
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ToastContainer limit={5} />
+      <RouterProvider router={router} />;
+    </QueryClientProvider>
+  );
 }
 
 export default App;

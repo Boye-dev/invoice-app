@@ -1,7 +1,9 @@
 export const AUTH_ROUTES = {
   LOGIN: "/login",
+  VERIFY: "/verify/:id/:token",
   SIGN_UP: "/sign-up",
   FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password/:id/:token",
 };
 
 export const DASHBOARD_PATHS = {

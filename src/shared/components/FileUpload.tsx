@@ -11,7 +11,7 @@ import { FaTrash } from "react-icons/fa";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import clsx from "clsx";
 
-type FileWithUrl = File & {
+export type FileWithUrl = File & {
   url: string;
 };
 interface IFileUpload {
@@ -21,6 +21,9 @@ interface IFileUpload {
   accept?: string;
   label?: string;
   labelStyles?: string;
+  withAsterisks?: boolean;
+  error?: boolean;
+  helperText?: string;
 }
 const FileUpload = forwardRef(
   (props: IFileUpload, ref: ForwardedRef<HTMLInputElement>) => {
@@ -31,6 +34,9 @@ const FileUpload = forwardRef(
       label,
       accept,
       labelStyles,
+      withAsterisks,
+      error,
+      helperText,
     } = props;
     const [allFiles, setAllFiles] = useState<FileWithUrl[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -71,18 +77,23 @@ const FileUpload = forwardRef(
       setAllFiles((prev) => prev.filter((v) => v.name !== file.name));
       if (inputRef.current) inputRef.current.value = "";
     };
-    const combinedLabelStles = clsx("font-bold", {
+    const combinedLabelStles = clsx("font-bold pb-10", {
       [`${labelStyles}`]: Boolean(labelStyles),
     });
     return (
-      <>
+      <div className="w-full">
         {label && (
           <label className={combinedLabelStles} htmlFor={name}>
             {label}
+            {withAsterisks && <span className="text-red-700">*</span>}
           </label>
         )}
         <label htmlFor={name} className="w-full">
-          <div className="border border-black border-dashed w-full min-h-10 rounded-sm flex flex-col gap-4 items-center justify-center py-5 cursor-pointer">
+          <div
+            className={`border ${
+              error ? "border-red-700" : "border-black"
+            } border-dashed w-full min-h-10 rounded-sm flex flex-col gap-4 items-center justify-center py-5 cursor-pointer mb-5`}
+          >
             <img src={fileUpload} alt="fileUpload" className="w-20 h-20" />
             <p className="text-center">Upload File</p>
           </div>
@@ -131,7 +142,8 @@ const FileUpload = forwardRef(
             </div>
           );
         })}
-      </>
+        {error && <p className="text-red-700 text-xs">{helperText}</p>}
+      </div>
     );
   }
 );

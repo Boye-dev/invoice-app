@@ -19,6 +19,7 @@ interface IPasswordInput {
   inputStyles?: string;
   size?: "md" | "lg" | "xlg";
   leftSection?: React.ReactNode;
+  withAsterisks?: boolean;
 }
 const PasswordInput = forwardRef(
   (props: IPasswordInput, ref: ForwardedRef<HTMLInputElement>) => {
@@ -36,6 +37,7 @@ const PasswordInput = forwardRef(
       onKeyUp,
       labelStyles,
       inputStyles,
+      withAsterisks,
       size = "md",
       leftSection,
     } = props;
@@ -63,6 +65,7 @@ const PasswordInput = forwardRef(
           {label && (
             <label className={combinedLabelStles} htmlFor={name}>
               {label}
+              {withAsterisks && <span className="text-red-700">*</span>}
             </label>
           )}
           <div className="w-full h-auto relative">

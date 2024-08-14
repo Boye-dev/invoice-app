@@ -1,5 +1,7 @@
 import clsx from "clsx";
 import React from "react";
+import { FaTruckLoading } from "react-icons/fa";
+import Loader from "./Loader";
 
 interface IButton {
   text: string;
@@ -12,9 +14,11 @@ interface IButton {
   leftSection?: React.ReactNode;
   rightSection?: React.ReactNode;
   buttonStyles?: string;
+  loading?: boolean;
 }
 const Button = (props: IButton) => {
   const {
+    loading,
     text,
     fullWidth,
     variant = "contained",
@@ -39,14 +43,20 @@ const Button = (props: IButton) => {
     <>
       <button
         className={combinedButtonStyles}
-        disabled={disabled}
+        disabled={disabled || loading}
         onClick={onClick}
       >
-        <div className="flex items-center justify-center gap-5">
-          {leftSection && leftSection}
-          {text}
-          {rightSection && rightSection}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center gap-5">
+            <Loader className="fill-white" />
+          </div>
+        ) : (
+          <div className="flex items-center justify-center gap-5">
+            {leftSection && leftSection}
+            {text}
+            {rightSection && rightSection}
+          </div>
+        )}
       </button>
     </>
   );
