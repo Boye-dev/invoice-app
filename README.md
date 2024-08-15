@@ -17,101 +17,36 @@ This is a web application for managing invoices built with React and TypeScript.
 
 Here's an overview of the folder structure of the project:
 
-
-## Folder Structure
-
-### node_modules/
-- This folder contains all the project’s dependencies installed by `npm` or `pnpm`. It is automatically generated and managed, so you don't typically edit files within it.
-
-### public/
-- Contains static assets like images, icons, and fonts. These files are served directly to the client without any processing.
-
-### src/
-- The main directory for your application’s source code.
-
-#### api/
-- Contains code related to API calls and interactions with external services. It includes functions to fetch, update, and delete data from APIs.
-
-#### assets/
-- Houses images, icons, and other static assets that are part of the application's UI.
-
-#### components/
-- Contains reusable UI components used throughout the application. Each component is typically organized in its own subfolder with its associated styles and tests.
-
-#### constants/
-- Stores constant values and configuration settings used across the application, helping to maintain consistency and reduce hardcoding.
-
-#### contexts/
-- Holds React context files that manage state and logic across different parts of the application. Useful for sharing data and functions among various components.
-
-#### hooks/
-- Contains custom React hooks that encapsulate reusable logic. These hooks simplify state management and side effects in components.
-
-#### interfaces/
-- Defines TypeScript interfaces and types used throughout the application, promoting type safety and code maintainability.
-
-#### pages/
-- Contains the main page components for different routes in the application. Each page typically corresponds to a route defined in the app’s router.
-
-#### services/
-- Provides various services like authentication, user management, and other business logic that are used by multiple parts of the application.
-
-#### shared/
-- Houses shared utilities, styles, and components that are used across different parts of the application to promote reuse and consistency.
-
-#### utils/
-- Contains utility functions that perform common tasks or calculations. These are used across different components and services to prevent code duplication.
-
-#### App.tsx
-- The root component of the application. It sets up the overall structure and routing of the app.
-
-#### index.css
-- Contains global CSS styles that are applied across the entire application.
-
-#### main.tsx
-- The entry point of the application, where the root component is rendered to the DOM.
-
-#### vite-env.d.ts
-- Provides type definitions for the Vite development environment.
-
-## Configuration and Miscellaneous Files
-
-### .env
-- Contains environment variables that are used throughout the application. This file is ignored by version control systems to keep sensitive information secure.
-
-### .eslintrc.cjs
-- Configuration file for ESLint, which is used to maintain code quality and consistency across the project.
-
-### .gitignore
-- Specifies files and folders that should be ignored by Git, such as `node_modules/` and `.env`.
-
-### index.html
-- The main HTML file that serves as the entry point for the application.
-
-### package.json
-- Lists the project’s dependencies, scripts, and other metadata. It is used by `npm` or `pnpm` to manage the project.
-
-### pnpm-lock.yaml
-- A lockfile used by `pnpm` to ensure consistent dependency versions across different environments.
-
-### postcss.config.js
-- Configuration file for PostCSS, which is used for processing CSS files.
-
-### README.md
-- Provides an overview of the project, its setup, and instructions for running and deploying the app.
-
-### tailwind.config.js
-- Configuration file for Tailwind CSS, which is used for styling the application.
-
-### tsconfig.app.json, tsconfig.json, tsconfig.node.json
-- TypeScript configuration files that specify compiler options and project settings for the application, development environment, and Node.js environment, respectively.
-
-### vercel.json
-- Configuration file for deploying the application to Vercel, specifying build and deployment settings.
-
-### vite.config.ts
-- Configuration file for Vite, the build tool used for the project. It specifies settings like plugins, server options, and build options.
-
+- `/src`: Contains all source code files.
+  - `/api`: Contains API handling files.
+  - `/assets`: Contains static assets like images, fonts, etc.
+  - `/components`: Contains React components.
+  - `/constants`: Contains constant values used across the app.
+  - `/contexts`: Contains React context files.
+  - `/hooks`: Contains custom React hooks.
+  - `/interfaces`: Contains custom TypeScript interfaces.
+  - `/pages`: Contains page components for different routes.
+  - `/services`: Contains custom service functions.
+  - `/shared`: Contains shared utilities and components.
+  - `/utils`: Contains utility functions.
+  - `App.tsx`: Main application component.
+  - `index.css`: Main stylesheet.
+  - `main.tsx`: Main entry point for the application.
+  - `vite-env.d.ts`: Vite environment type declarations.
+- `.env`: Environment configuration file.
+- `.eslintrc.cjs`: ESLint configuration file.
+- `.gitignore`: Specifies intentionally untracked files to ignore.
+- `index.html`: Main HTML file.
+- `package.json`: Project metadata and dependencies.
+- `pnpm-lock.yaml`: Lock file for dependencies.
+- `postcss.config.js`: PostCSS configuration file.
+- `README.md`: Project README file.
+- `tailwind.config.js`: Tailwind CSS configuration file.
+- `tsconfig.app.json`: TypeScript configuration for the application.
+- `tsconfig.json`: Base TypeScript configuration.
+- `tsconfig.node.json`: TypeScript configuration for Node.js.
+- `vercel.json`: Vercel deployment configuration.
+- `vite.config.ts`: Vite configuration file.
 
 ## Features
 
@@ -127,7 +62,7 @@ Here's an overview of the folder structure of the project:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/invoicing-app.git
+   git clone [https://github.com/yourusername/invoicing-app.git](https://github.com/Boye-dev/invoice-app.git)
    ```
    
 2. Navigate to the project directory:
@@ -138,13 +73,14 @@ Here's an overview of the folder structure of the project:
 
 3. Install the dependencies:
    ```bash
-  cd invoicing-app
-  ```
+    pnpm install
+    ```
 
 4. Create a `.env` file to configure your environment variables.
   ```bash
-    VITE_API_BASE_URL=http://localhost:4000/api
+  VITE_API_BASE_URL=https://boye-dev-invoice-app-backend.vercel.app/api
   ```
+
 
 ## Scripts
 
