@@ -11,7 +11,6 @@ This is a web application for managing invoices built with React and TypeScript.
 - [Dependencies](#dependencies)
 - [Development Dependencies](#development-dependencies)
 - [Configuration](#configuration)
-- [License](#license)
 
 ## Folder Structure
 
@@ -62,24 +61,26 @@ Here's an overview of the folder structure of the project:
 1. Clone the repository:
 
    ```bash
-   git clone [https://github.com/yourusername/invoicing-app.git](https://github.com/Boye-dev/invoice-app.git)
+   git clone https://github.com/Boye-dev/invoice-app.git
    ```
    
 2. Navigate to the project directory:
 
-  ```bash
-  cd invoicing-app
-  ```
+   ```bash
+   cd invoicing-app
+   ```
 
 3. Install the dependencies:
-   ```bash
-    pnpm install
-    ```
 
-4. Create a `.env` file to configure your environment variables.
-  ```bash
-  VITE_API_BASE_URL=https://boye-dev-invoice-app-backend.vercel.app/api
-  ```
+   ```bash
+   pnpm install
+   ```
+
+5. Create a `.env` file to configure your environment variables.
+
+   ```bash
+   VITE_API_BASE_URL=https://boye-dev-invoice-app-backend.vercel.app/api
+   ```
 
 
 ## Scripts
