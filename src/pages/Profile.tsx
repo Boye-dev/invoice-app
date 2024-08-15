@@ -2,8 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import ProfileForm from "../components/ProfileForm";
 import { getUserById } from "../services/user.service";
 import { getDecodedJwt } from "../api/Auth";
+import { useTitle } from "../hooks/useTitle";
 
 const Profile = () => {
+  useTitle("Profile | Invoice App");
+
   const id = getDecodedJwt()?.id || "";
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["profile", id],
