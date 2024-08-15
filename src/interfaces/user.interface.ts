@@ -36,7 +36,13 @@ export interface IUserVerify {
 export interface IUserReset {
   password: string;
 }
-export interface IUser extends Document {
+
+export interface IPasswordReset {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+export interface IUser {
   _id: string;
   firstname: string;
   lastname: string;

@@ -33,7 +33,7 @@ const NewProduct = () => {
   });
 
   const submitSignUp = (values: CreateProduct) => {
-    let data = new FormData();
+    const data = new FormData();
     data.append("name", values.name);
     data.append("description", values.description);
     data.append("price", String(values.price));

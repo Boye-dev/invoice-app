@@ -47,7 +47,6 @@ const TablePagination = ({
             },
           ]}
           onChange={(val) => {
-            console.log({ val });
             typeof val === "number" && onRowsPerPageChange(val);
           }}
           defaultValue={pageSize}

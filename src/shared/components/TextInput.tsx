@@ -7,7 +7,7 @@ interface ITextInput {
   disabled?: boolean;
   label?: string;
   name: string;
-  onChange: (
+  onChange?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
   value?: string;
@@ -91,7 +91,7 @@ const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
               value={value}
               name={name}
               placeholder={placeholder}
-              onChange={(e) => onChange(e)}
+              onChange={(e) => onChange && onChange(e)}
               onBlur={(e) => onBlur && onBlur(e)}
               onKeyUp={(e) => onKeyUp && onKeyUp(e)}
               className={combinedInputStles}
@@ -104,7 +104,7 @@ const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
               value={value}
               name={name}
               placeholder={placeholder}
-              onChange={(e) => onChange(e)}
+              onChange={(e) => onChange && onChange(e)}
               onBlur={(e) => onBlur && onBlur(e)}
               onKeyUp={(e) => onKeyUp && onKeyUp(e)}
               type="text"

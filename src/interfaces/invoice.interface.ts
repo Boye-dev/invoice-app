@@ -12,7 +12,6 @@ export enum InvoiceType {
 }
 export enum PaymentStatus {
   INSTALLMENT = "INSTALLMENT",
-  FULLY_PAID = "FULLY_PAID",
   PAID_CASH = "PAID_CASH",
   PAID_ONLINE = "PAID_ONLINE",
   UNPAID = "UNPAID",

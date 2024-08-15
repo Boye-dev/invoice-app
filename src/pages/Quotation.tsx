@@ -10,7 +10,10 @@ import {
   IInvoiceParams,
   InvoiceType,
 } from "../interfaces/invoice.interface";
-import { convertAllUpperCaseToSentenceCase } from "../utils/textHelpers";
+import {
+  convertAllUpperCaseToSentenceCase,
+  getStatusColor,
+} from "../utils/textHelpers";
 import useFilter from "../hooks/useFilter";
 import Button from "../shared/components/Button";
 import { useTitle } from "../hooks/useTitle";
@@ -50,7 +53,16 @@ const Quotation = () => {
       key: "paymentStatus",
       label: "Payment Status",
       render: (row) => (
-        <p>{convertAllUpperCaseToSentenceCase(row.paymentStatus)}</p>
+        <div
+          className="w-[120px] rounded-2xl h-auto py-2 flex items-center justify-center"
+          style={{
+            backgroundColor: getStatusColor(row.paymentStatus),
+          }}
+        >
+          <p className="text-white w-auto">
+            {convertAllUpperCaseToSentenceCase(row.paymentStatus)}
+          </p>
+        </div>
       ),
     },
 
@@ -95,7 +107,6 @@ const Quotation = () => {
             val && setTableParams({ ...tableParams, pageSize: val, page: 0 })
           }
           onPageChange={(val) => {
-            console.log(val);
             setTableParams((prev) => {
               return { ...prev, page: val };
             });

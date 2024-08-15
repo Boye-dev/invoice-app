@@ -1,6 +1,10 @@
 import Api from "../api/Api";
 import { ApiResponse } from "../interfaces/helper.interface";
-import { IUser, IUserLogin } from "../interfaces/user.interface";
+import {
+  IPasswordReset,
+  IUser,
+  IUserLogin,
+} from "../interfaces/user.interface";
 import { handleErrors } from "../utils/handleErrors";
 
 export interface ILoginResponse {
@@ -39,6 +43,33 @@ export const signup = async (payload: FormData) => {
   return res.data;
 };
 
+export const updateUser = async ({
+  payload,
+  id,
+}: {
+  payload: FormData;
+  id: string;
+}) => {
+  const res = await Api.patch<ApiResponse<ILoginResponse>>(
+    `/users/${id}`,
+    payload
+  );
+  return res.data;
+};
+export const updatePassword = async ({
+  payload,
+  id,
+}: {
+  payload: IPasswordReset;
+  id: string;
+}) => {
+  const res = await Api.patch<ApiResponse<IUser>>(
+    `/users/update-password/${id}`,
+    payload
+  );
+  return res.data;
+};
+
 export const resetPassword = ({
   password,
   token,
@@ -71,6 +102,18 @@ export const verifyUser = async ({
         noBearerToken: true,
       },
     });
+    if (res) {
+      return res.data;
+    }
+  } catch (error) {
+    if (error instanceof Error) return handleErrors(error);
+  }
+  return undefined;
+};
+
+export const getUserById = async (id: string) => {
+  try {
+    const res = await Api.get<ApiResponse<IUser>>(`/users/${id}`);
     if (res) {
       return res.data;
     }

@@ -3,6 +3,7 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { DASHBOARD_PATHS } from "./routes";
 import { FaCartShopping } from "react-icons/fa6";
 import { LuLogOut } from "react-icons/lu";
+import { removeToken } from "../api/Auth";
 
 export const navItems = [
   {
@@ -35,7 +36,10 @@ export const navItems = [
   {
     icon: LuLogOut,
     name: "Logout",
-    onClick: () => {},
+    onClick: () => {
+      removeToken();
+      window.location.reload();
+    },
     bottom: true,
   },
 ];

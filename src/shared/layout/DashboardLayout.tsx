@@ -13,7 +13,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import LoadingLogo from "../components/LoadingLogo";
 
 const DashboardLayout = () => {
-  const { loading, authenticated } = useUserContext();
+  const { loading, authenticated, decodedToken } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -97,8 +97,13 @@ const DashboardLayout = () => {
                   )}
             </p>
             <div className="flex items-center">
-              <img src={logo} className="w-10 h-10 rounded-full " />
-              <p className="text-md font-bold ml-3">Oyelola Adeboye</p>
+              <img
+                src={decodedToken?.profilePicture}
+                className="w-10 h-10 rounded-full "
+              />
+              <p className="text-md font-bold ml-3">
+                {decodedToken?.firstname} {decodedToken?.lastname}
+              </p>
             </div>
             <div onClick={() => setOpen(!open)} className="md:hidden">
               {open ? <FaXmark /> : <FaBars />}

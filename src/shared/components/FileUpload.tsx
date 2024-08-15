@@ -23,6 +23,7 @@ interface IFileUpload {
   withAsterisks?: boolean;
   error?: boolean;
   helperText?: string;
+  target?: React.ReactNode;
 }
 const FileUpload = forwardRef(
   (props: IFileUpload, ref: ForwardedRef<HTMLInputElement>) => {
@@ -36,6 +37,7 @@ const FileUpload = forwardRef(
       withAsterisks,
       error,
       helperText,
+      target,
     } = props;
     const [allFiles, setAllFiles] = useState<FileWithUrl[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -90,14 +92,18 @@ const FileUpload = forwardRef(
           </label>
         )}
         <label htmlFor={name} className="w-full">
-          <div
-            className={`border ${
-              error ? "border-red-700" : "border-black"
-            } border-dashed w-full min-h-10 rounded-sm flex flex-col gap-4 items-center justify-center py-5 cursor-pointer mb-5`}
-          >
-            <img src={fileUpload} alt="fileUpload" className="w-20 h-20" />
-            <p className="text-center">Upload File</p>
-          </div>
+          {target ? (
+            target
+          ) : (
+            <div
+              className={`border ${
+                error ? "border-red-700" : "border-black"
+              } border-dashed w-full min-h-10 rounded-sm flex flex-col gap-4 items-center justify-center py-5 cursor-pointer mb-5`}
+            >
+              <img src={fileUpload} alt="fileUpload" className="w-20 h-20" />
+              <p className="text-center">Upload File</p>
+            </div>
+          )}
         </label>
         <input
           ref={inputRef}

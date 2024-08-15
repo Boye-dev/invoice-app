@@ -73,7 +73,6 @@ const Products = () => {
             val && setTableParams({ ...tableParams, pageSize: val, page: 0 })
           }
           onPageChange={(val) => {
-            console.log(val);
             setTableParams((prev) => {
               return { ...prev, page: val };
             });

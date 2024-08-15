@@ -1,8 +1,6 @@
 import Table, { IColumns } from "../shared/components/Table";
-import { HiDotsHorizontal } from "react-icons/hi";
 import TextInput from "../shared/components/TextInput";
 import { FaSearch } from "react-icons/fa";
-import Menu from "../shared/components/Menu";
 import { DASHBOARD_PATHS } from "../constants/routes";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +10,10 @@ import {
   IInvoiceParams,
   InvoiceType,
 } from "../interfaces/invoice.interface";
-import { convertAllUpperCaseToSentenceCase } from "../utils/textHelpers";
+import {
+  convertAllUpperCaseToSentenceCase,
+  getStatusColor,
+} from "../utils/textHelpers";
 import useFilter from "../hooks/useFilter";
 import { useTitle } from "../hooks/useTitle";
 
@@ -52,7 +53,16 @@ const Invoices = () => {
       key: "paymentStatus",
       label: "Payment Status",
       render: (row) => (
-        <p>{convertAllUpperCaseToSentenceCase(row.paymentStatus)}</p>
+        <div
+          className="w-[120px] rounded-2xl h-auto py-2 flex items-center justify-center"
+          style={{
+            backgroundColor: getStatusColor(row.paymentStatus),
+          }}
+        >
+          <p className="text-white w-auto">
+            {convertAllUpperCaseToSentenceCase(row.paymentStatus)}
+          </p>
+        </div>
       ),
     },
 
@@ -63,21 +73,6 @@ const Invoices = () => {
         <p>
           {row.client.lastname} {row.client.firstname}
         </p>
-      ),
-    },
-
-    {
-      key: "_id",
-      label: "",
-      render: () => (
-        <Menu
-          target={<HiDotsHorizontal />}
-          data={[
-            { label: "Paid", onClick: () => {} },
-            { label: "Paid", onClick: () => {} },
-            { label: "Paid", onClick: () => {} },
-          ]}
-        />
       ),
     },
   ];
@@ -106,7 +101,6 @@ const Invoices = () => {
             val && setTableParams({ ...tableParams, pageSize: val, page: 0 })
           }
           onPageChange={(val) => {
-            console.log(val);
             setTableParams((prev: IInvoiceParams) => {
               return { ...prev, page: val };
             });

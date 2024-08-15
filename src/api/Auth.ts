@@ -34,8 +34,12 @@ export function getDecodedRefreshJwt(tkn = ""): IUserDecoded {
     return {} as IUserDecoded;
   }
 }
-export const getDecodedJwt = (): IUserDecoded | null => {
+export const getDecodedJwt = (newToken?: string): IUserDecoded | null => {
   const token = getToken();
+  if (newToken) {
+    const decoded: IUserDecoded = jwtDecode(newToken);
+    return decoded;
+  }
   if (token) {
     const decoded: IUserDecoded = jwtDecode(token);
     return decoded;

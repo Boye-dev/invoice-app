@@ -20,6 +20,7 @@ const schema = z.object({
   email: z.string().email(),
   password: z.string().min(6, { message: "Password should be greater than 6" }),
   firstname: z.string().min(2, { message: "Firstname is required" }),
+  phoneNumber: z.string().min(2, { message: "Phone Number is required" }),
   lastname: z.string().min(2, { message: "Lastname is required" }),
   confirmPassword: z
     .string()
@@ -65,7 +66,7 @@ const SignUp = () => {
     },
   });
   const submitSignUp = (values: CreateUserRequest) => {
-    let data = new FormData();
+    const data = new FormData();
     data.append("firstname", values.firstname);
     data.append("lastname", values.lastname);
     data.append("email", values.email);

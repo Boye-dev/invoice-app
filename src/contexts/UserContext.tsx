@@ -7,22 +7,39 @@ interface IUserContext {
   authenticated: boolean;
   setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   decodedToken?: IUserDecoded;
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  refresh: boolean;
 }
 const UserContext = createContext<IUserContext | null>(null);
 
 export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { loading, authenticated, setAuthenticated, decodedToken } =
-    useRoleAuthentication();
+  const {
+    loading,
+    authenticated,
+    setAuthenticated,
+    decodedToken,
+    setRefresh,
+    refresh,
+  } = useRoleAuthentication();
   const contextValue = React.useMemo(
     () => ({
       loading,
       authenticated,
       decodedToken,
       setAuthenticated,
+      setRefresh,
+      refresh,
     }),
-    [loading, authenticated, decodedToken, setAuthenticated]
+    [
+      loading,
+      authenticated,
+      decodedToken,
+      setAuthenticated,
+      setRefresh,
+      refresh,
+    ]
   );
   return (
     <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>

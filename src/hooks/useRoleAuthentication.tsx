@@ -15,10 +15,19 @@ const useRoleAuthentication = (): {
   authenticated: boolean;
   setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   decodedToken?: IUserDecoded;
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  refresh: boolean;
 } => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
-  const decodedToken = getDecodedJwt();
+  const [refresh, setRefresh] = useState(false);
+  const [decodedToken, setDecodeToken] = useState<IUserDecoded | null>(
+    getDecodedJwt()
+  );
+  useEffect(() => {
+    const decoded = getDecodedJwt();
+    setDecodeToken(decoded);
+  }, [refresh]);
   const refreshJwt = async () => {
     const response = await axios.post(`${baseURL}/users/refresh`, {
       token: getRefreshToken(),
@@ -63,14 +72,16 @@ const useRoleAuthentication = (): {
       setLoading(false);
       setAuthenticated(false);
     }
-  }, []);
+  }, [decodedToken]);
   return {
     loading,
     authenticated,
-    // ...(role.includes(decodedToken.role as keyof typeof RolesEnum) && {
-    //   decodedToken,
-    // }),
+    ...(decodedToken && {
+      decodedToken,
+    }),
     setAuthenticated,
+    refresh,
+    setRefresh,
   };
 };
 

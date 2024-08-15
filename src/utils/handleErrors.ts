@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 export const handleErrors = (error: Error) => {
-  console.log(error);
   if (error instanceof AxiosError) {
     if (error.response?.data.fields) {
       error.response.data.fields.forEach(
