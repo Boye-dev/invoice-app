@@ -8,25 +8,25 @@ import { AUTH_ROUTES, DASHBOARD_PATHS } from "./constants/routes";
 import SignUp from "./pages/Auth/SignUp";
 import AuthLayout from "./shared/layout/AuthLayout";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
-import DashboardLayout from "./shared/layout/DashboardLayout";
 import Invoices from "./pages/Invoices";
-import NewInvoice from "./pages/NewInvoice";
 import EditInvoice from "./pages/EditInvoice";
 import Quotation from "./pages/Quotation";
 import EditQuotation from "./pages/EditQuotation";
 import NewQuotation from "./pages/NewQuotation";
 import Clients from "./pages/Clients";
-import NewClient from "./pages/NewInvoice";
 import EditClient from "./pages/EditClient";
 import Products from "./pages/Products";
 import NewProduct from "./pages/NewProduct";
-import EditProduct from "./pages/EditClient";
+import EditProduct from "./pages/EditProduct";
 import Profile from "./pages/Profile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Verify from "./pages/Auth/Verify";
 import ResetPassword from "./pages/Auth/ResetPassword";
+import NewInvoice from "./pages/NewInvoice";
+import NewClient from "./pages/NewClient";
+import UserLayout from "./shared/layout/UserLayout";
 
 function App() {
   const router = createBrowserRouter([
@@ -61,7 +61,7 @@ function App() {
       ],
     },
     {
-      element: <DashboardLayout />,
+      element: <UserLayout />,
       children: [
         {
           path: DASHBOARD_PATHS.INVOICES,
@@ -136,7 +136,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastContainer limit={5} />
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }

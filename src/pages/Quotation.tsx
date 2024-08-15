@@ -1,103 +1,81 @@
-import { useState } from "react";
 import Table, { IColumns } from "../shared/components/Table";
-import { HiDotsHorizontal } from "react-icons/hi";
 import TextInput from "../shared/components/TextInput";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import Menu from "../shared/components/Menu";
 import { DASHBOARD_PATHS } from "../constants/routes";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getInvoices } from "../services/invoice.service";
+import {
+  IInvoice,
+  IInvoiceParams,
+  InvoiceType,
+} from "../interfaces/invoice.interface";
+import { convertAllUpperCaseToSentenceCase } from "../utils/textHelpers";
+import useFilter from "../hooks/useFilter";
 import Button from "../shared/components/Button";
-interface IData {
-  name: string;
-  date: string;
-  client: string;
-  id: string;
-  price: string;
-  status: string;
-}
+import { useTitle } from "../hooks/useTitle";
+
 const Quotation = () => {
-  const [selectedItems, setSelectedItems] = useState<IData[]>([]);
-  const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  useTitle("Quotations | Invoice App");
+
+  const {
+    params: tableParams,
+    setParams: setTableParams,
+    search,
+    setSearch,
+  } = useFilter<IInvoiceParams>({
+    defaultParams: {
+      page: 0,
+      pageSize: 10,
+      type: InvoiceType.QUOTATION,
+    },
+  });
+
   const navigate = useNavigate();
-  const columns: IColumns<IData>[] = [
+  const { data, isLoading } = useQuery({
+    queryKey: ["invoices", tableParams],
+    queryFn: () => getInvoices(tableParams),
+  });
+  const columns: IColumns<IInvoice>[] = [
+    {
+      key: "invoiceNumber",
+      label: "Number",
+    },
     {
       key: "name",
       label: "Name",
     },
+
     {
-      key: "date",
-      label: "Date",
+      key: "paymentStatus",
+      label: "Payment Status",
+      render: (row) => (
+        <p>{convertAllUpperCaseToSentenceCase(row.paymentStatus)}</p>
+      ),
     },
+
     {
       key: "client",
       label: "Client",
-    },
-    {
-      key: "price",
-      label: "Price",
-    },
-    {
-      key: "status",
-      label: "Status",
-    },
-    {
-      key: "id",
-      label: "",
-      render: () => (
-        <Menu
-          target={<HiDotsHorizontal />}
-          data={[
-            { label: "Paid", onClick: (e) => e.stopPropagation() },
-            { label: "Paid", onClick: () => {} },
-            { label: "Paid", onClick: () => {} },
-          ]}
-        />
+      render: (row) => (
+        <p>
+          {row.client.lastname} {row.client.firstname}
+        </p>
       ),
     },
   ];
-  const data: IData[] = [
-    {
-      name: "hello",
-      id: "123",
-      status: "Paid",
-      price: "2000",
-      client: "sdd",
-      date: "sjkjk",
-    },
-    {
-      name: "wef",
-      id: "1234",
-      status: "Paid",
-      price: "2000",
-      client: "sdd",
-      date: "sjkjk",
-    },
-  ];
-  const handleCheckedItems = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    value: IData
-  ) => {
-    if (e.target.checked) {
-      setSelectedItems([...selectedItems, value]);
-    } else {
-      setSelectedItems((prev) => {
-        const items = [...prev];
-        const filteredItems = items.filter((v) => v.id !== value.id);
-        return filteredItems;
-      });
-    }
-  };
+
   return (
     <>
       <div className="pt-10 px-3 md:px-10">
         <div className="flex mb-10 justify-between items-centers w-full flex-wrap">
           <TextInput
+            value={search}
             rightSection={<FaSearch />}
             inputDivStyles="w-full md:w-[400px] "
             placeholder="Search"
             name="search"
-            onChange={() => {}}
+            onChange={(e) => setSearch(e.target.value)}
           />
           <Button
             buttonStyles="w-full md:w-auto mt-5 md:mt-0"
@@ -106,17 +84,26 @@ const Quotation = () => {
             onClick={() => navigate(DASHBOARD_PATHS.NEW_QUOTATION)}
           />
         </div>
-        <Table<IData>
+
+        <Table<IInvoice>
           columns={columns}
-          data={data}
-          selectedItems={selectedItems}
-          handleCheckedItems={handleCheckedItems}
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          total={20}
-          setPageSize={setPageSize}
-          setPageNumber={setPageNumber}
-          onRowItemClick={() => navigate(`${DASHBOARD_PATHS.EDIT_QUOTATION}/2`)}
+          data={data?.data.data?.results || []}
+          pageNumber={tableParams.page}
+          pageSize={tableParams.pageSize}
+          total={data?.data.data?.total || 0}
+          onRowsPerPageChange={(val) =>
+            val && setTableParams({ ...tableParams, pageSize: val, page: 0 })
+          }
+          onPageChange={(val) => {
+            console.log(val);
+            setTableParams((prev) => {
+              return { ...prev, page: val };
+            });
+          }}
+          onRowItemClick={(row) =>
+            navigate(`${DASHBOARD_PATHS.EDIT_QUOTATION}/${row._id}`)
+          }
+          loading={isLoading}
         />
       </div>
     </>

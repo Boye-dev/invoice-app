@@ -1,7 +1,6 @@
 import {
   ForwardedRef,
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -60,18 +59,20 @@ const FileUpload = forwardRef(
                   allFiles.push(value);
                 }
               });
+              onChange && onChange(allFiles);
+
               return allFiles;
             }
+            onChange && onChange(filesUrl);
+
             return filesUrl;
           }
+          onChange && onChange(filesUrl);
+
           return filesUrl;
         });
       }
     };
-
-    useEffect(() => {
-      onChange && onChange(allFiles);
-    }, [allFiles]);
 
     const handleRemove = (file: FileWithUrl) => {
       setAllFiles((prev) => prev.filter((v) => v.name !== file.name));

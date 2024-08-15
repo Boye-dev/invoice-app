@@ -11,6 +11,9 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.9.0
     version: 3.9.0(react-hook-form@7.52.2)
+  '@mantine/hooks':
+    specifier: ^7.12.1
+    version: 7.12.1(react@18.3.1)
   '@tanstack/react-query':
     specifier: ^5.51.23
     version: 5.51.23(react@18.3.1)
@@ -426,6 +429,14 @@ packages:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
     dev: true
+
+  /@mantine/hooks@7.12.1(react@18.3.1):
+    resolution: {integrity: sha512-YPA3qiMHJkWID5+YzakBaLvjHtX3Fg3PdPY49iIb/CaWM9+lrJ+77TOVS7bsY7ZTBHXUfzft1/6Woqt3xSuweA==}
+    peerDependencies:
+      react: ^18.2.0
+    dependencies:
+      react: 18.3.1
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

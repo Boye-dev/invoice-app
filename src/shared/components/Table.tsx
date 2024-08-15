@@ -1,7 +1,8 @@
 import React from "react";
 import { FaSortAlphaDown } from "react-icons/fa";
 import TablePagination, { ITablePagination } from "./TablePagination";
-
+import LoadingLogo from "./LoadingLogo";
+import empty from "../../assets/empty.webp";
 export interface IColumns<T> {
   key: keyof T;
   label: string;
@@ -11,15 +12,16 @@ export interface IColumns<T> {
 interface ITable<T> extends ITablePagination {
   columns: IColumns<T>[];
   data: T[];
-  selectedItems: T[];
+  selectedItems?: T[];
   handleCheckedItems?: (
     e: React.ChangeEvent<HTMLInputElement>,
     value: T
   ) => void;
   checkbox?: boolean;
   onRowItemClick?: (value: T) => void;
+  loading?: boolean;
 }
-const Table = <T extends { id: string }>(props: ITable<T>) => {
+const Table = <T extends { _id?: string; id?: string }>(props: ITable<T>) => {
   const {
     columns,
     data,
@@ -29,8 +31,9 @@ const Table = <T extends { id: string }>(props: ITable<T>) => {
     pageNumber,
     pageSize,
     total,
-    setPageNumber,
-    setPageSize,
+    onRowsPerPageChange,
+    onPageChange,
+    loading,
   } = props;
 
   const renderHead = () => (
@@ -41,7 +44,7 @@ const Table = <T extends { id: string }>(props: ITable<T>) => {
           <th key={col.key as string} className={`pb-5 min-w-[200px]`}>
             <div className="flex items-center">
               <p>{col.label as React.ReactNode}</p>
-              {col.key !== "id" && <FaSortAlphaDown className="ml-2" />}
+              {col.key !== "_id" && <FaSortAlphaDown className="ml-2" />}
               {/* <FaSortAlphaUpAlt /> */}
             </div>
           </th>
@@ -50,41 +53,44 @@ const Table = <T extends { id: string }>(props: ITable<T>) => {
     </tr>
   );
   const renderBody = () => {
-    return data.map((value) => (
-      <tr
-        className="odd:bg-slate-50 hover:bg-slate-100 cursor-pointer"
-        key={value.id}
-        onClick={() => onRowItemClick && onRowItemClick(value)}
-      >
-        {checkbox && (
-          <td>
-            <div className="flex justify-center items-center">
-              <input
-                type="checkbox"
-                onChange={(e) =>
-                  handleCheckedItems && handleCheckedItems(e, value)
-                }
-              />
-            </div>
-          </td>
-        )}
-        {columns.map((col) => (
-          <td
-            key={col.key as string}
-            className={`py-3 border-b`}
-            style={{ width: `calc(100% / ${columns.length})` }}
-          >
-            <div>
-              {col.render ? (
-                (col.render(value) as React.ReactNode)
-              ) : (
-                <p>{value[col.key] as React.ReactNode}</p>
-              )}
-            </div>
-          </td>
-        ))}
-      </tr>
-    ));
+    return (
+      data.length > 0 &&
+      data?.map((value) => (
+        <tr
+          className="odd:bg-slate-50 hover:bg-slate-100 cursor-pointer"
+          key={value._id}
+          onClick={() => onRowItemClick && onRowItemClick(value)}
+        >
+          {checkbox && (
+            <td>
+              <div className="flex justify-center items-center">
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    handleCheckedItems && handleCheckedItems(e, value)
+                  }
+                />
+              </div>
+            </td>
+          )}
+          {columns.map((col) => (
+            <td
+              key={col.key as string}
+              className={`py-3 border-b`}
+              style={{ width: `calc(100% / ${columns.length})` }}
+            >
+              <div>
+                {col.render ? (
+                  (col.render(value) as React.ReactNode)
+                ) : (
+                  <p>{value[col.key] as React.ReactNode}</p>
+                )}
+              </div>
+            </td>
+          ))}
+        </tr>
+      ))
+    );
   };
 
   return (
@@ -93,16 +99,33 @@ const Table = <T extends { id: string }>(props: ITable<T>) => {
         <div className="w-full overflow-x-auto ">
           <table className="w-full">
             <thead className="border-b">{renderHead()}</thead>
-            <tbody>{renderBody()}</tbody>
+
+            {!loading && data.length > 0 && <tbody>{renderBody()}</tbody>}
           </table>
+          {!loading && data.length === 0 && (
+            <div className="w-full flex justify-center items-center min-h-[200px]">
+              <div className="w-[200px]">
+                <img src={empty} className="w-full" />
+              </div>
+            </div>
+          )}
+          {loading && (
+            <div className="w-full flex justify-center items-center min-h-[200px]">
+              <div className="w-20">
+                <LoadingLogo />
+              </div>
+            </div>
+          )}
         </div>
-        <TablePagination
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          total={total}
-          setPageNumber={setPageNumber}
-          setPageSize={setPageSize}
-        />
+        {loading || (
+          <TablePagination
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            total={total}
+            onRowsPerPageChange={onRowsPerPageChange}
+            onPageChange={onPageChange}
+          />
+        )}
       </div>
     </>
   );

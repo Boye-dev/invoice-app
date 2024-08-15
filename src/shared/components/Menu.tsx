@@ -40,7 +40,6 @@ const Menu = forwardRef((props: IMenu, ref: ForwardedRef<HTMLInputElement>) => {
   });
   const updatePosition = () => {
     if (inputRef.current) {
-      console.log("yes");
       const rect = inputRef.current.getBoundingClientRect();
       setPosition({
         top: rect.top,
@@ -130,16 +129,13 @@ const Menu = forwardRef((props: IMenu, ref: ForwardedRef<HTMLInputElement>) => {
                   <div
                     className="cursor-pointer flex items-center hover:bg-slate-100"
                     key={JSON.stringify(item)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      item.onClick && item.onClick(e);
+                      setOpen(false);
+                    }}
                   >
-                    <p
-                      className="p-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        item.onClick;
-                      }}
-                    >
-                      {item.label}
-                    </p>
+                    <p className="p-2">{item.label}</p>
                   </div>
                 )}
                 <hr className="last:hidden" />

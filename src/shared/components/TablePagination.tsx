@@ -1,34 +1,31 @@
-import React from "react";
 import SelectInput from "./SelectInput";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 export interface ITablePagination {
   total: number;
   pageNumber: number;
   pageSize: number;
-  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
-  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  onRowsPerPageChange: (_val: number) => void;
+  onPageChange: (_val: number) => void;
 }
 const TablePagination = ({
   pageNumber,
   pageSize,
   total,
-  setPageNumber,
-  setPageSize,
+  onRowsPerPageChange,
+  onPageChange,
 }: ITablePagination) => {
   const renderValue = () => {
-    if (pageNumber === 0) {
-      return pageSize > total ? total : pageSize;
-    } else if (pageSize * (pageNumber + 1) >= total) {
-      return total;
-    } else {
-      return pageSize * (pageNumber + 1);
+    if (total - pageNumber * pageSize > pageSize) {
+      return (pageNumber + 1) * pageSize;
     }
+    return total;
   };
   return (
     <>
       <div className="flex justify-end mt-5 items-center gap-5">
         <p>Rows Per Page</p>
         <SelectInput
+          value={pageSize}
           inputStyles="min-w-20"
           name="pagination"
           data={[
@@ -50,10 +47,10 @@ const TablePagination = ({
             },
           ]}
           onChange={(val) => {
-            setPageSize(val as number);
-            setPageNumber(0);
+            console.log({ val });
+            typeof val === "number" && onRowsPerPageChange(val);
           }}
-          defaultValue={10}
+          defaultValue={pageSize}
         />
         <p>
           {pageNumber * pageSize + 1}-{renderValue()} of {total}
@@ -65,7 +62,7 @@ const TablePagination = ({
                 ? "text-slate-300 cursor-not-allowed"
                 : "cursor-pointer"
             }`}
-            onClick={() => pageNumber !== 0 && setPageNumber(pageNumber - 1)}
+            onClick={() => pageNumber !== 0 && onPageChange(pageNumber - 1)}
           />
         </div>
 
@@ -77,8 +74,8 @@ const TablePagination = ({
                 : "cursor-pointer"
             }`}
             onClick={() => {
-              if (pageSize * (pageNumber + 1) < total) {
-                setPageNumber(pageNumber + 1);
+              if (total - pageNumber * pageSize > pageSize) {
+                onPageChange(pageNumber + 1);
               }
             }}
           />

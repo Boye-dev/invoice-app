@@ -3,14 +3,17 @@ import Button from "../components/Button";
 import { FaBars, FaPlus } from "react-icons/fa";
 import { navItems } from "../../constants/navItems";
 import SidebarItems from "../components/SidebarItems";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { DASHBOARD_PATHS } from "../../constants/routes";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { AUTH_ROUTES, DASHBOARD_PATHS } from "../../constants/routes";
 import { convertAllLowercaseToSentenceCase } from "../../utils/textHelpers";
 import { useState } from "react";
 import { FaXmark } from "react-icons/fa6";
 import clsx from "clsx";
+import { useUserContext } from "../../contexts/UserContext";
+import LoadingLogo from "../components/LoadingLogo";
 
 const DashboardLayout = () => {
+  const { loading, authenticated } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -24,7 +27,15 @@ const DashboardLayout = () => {
   const close = () => {
     setOpen(false);
   };
-  return (
+  return loading ? (
+    <div className="fixed bg-white w-full h-dvh flex justify-center items-center top-0">
+      <div className="w-20">
+        <LoadingLogo />
+      </div>
+    </div>
+  ) : !authenticated ? (
+    <Navigate to={AUTH_ROUTES.LOGIN} />
+  ) : (
     <>
       <div className="flex relative">
         <div className={combinedDashboardStyles}>

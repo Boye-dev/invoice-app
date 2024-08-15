@@ -17,11 +17,11 @@ interface ISelectInput {
   label?: string;
   name: string;
   onChange: (values: string | number | (string | number)[] | null) => void;
-  value?: string;
+  value?: string | number | (string | number)[] | null;
   error?: boolean;
   helperText?: string;
   onBlur?: (e: React.FocusEvent<HTMLInputElement, Element>) => void;
-  onMouseUp?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseUp?: (event?: React.MouseEvent<HTMLDivElement>) => void;
   labelStyles?: string;
   inputStyles?: string;
   inputDivStyles?: string;
@@ -60,13 +60,18 @@ const SelectInput = forwardRef(
       data,
       renderOption,
       defaultValue = null,
-      showChip = false,
+      showChip = true,
+      value,
     } = props;
     const [open, setOpen] = useState(false);
     const [values, setValues] = useState<
       string | number | (string | number)[] | null
-    >(defaultValue);
-
+    >(() => {
+      if (value) {
+        return value || null;
+      }
+      return defaultValue;
+    });
     const baseInputStyles = `cursor-pointer bg-white border border-solid border-gray-900 outline-none px-3 py-3 px-4 rounded-lg text-sm placeholder:text-gray-400 focus:border-blue-400 focus:border-2 flex justify-between items-center`;
     const combinedInputStles = clsx(baseInputStyles, {
       [`${inputStyles}`]: Boolean(inputStyles),
@@ -171,30 +176,45 @@ const SelectInput = forwardRef(
             const isSelected = allValues.find((item) => item === val);
             if (isSelected) {
               const filteredItems = allValues.filter((item) => item !== val);
+              onChange(filteredItems);
+              onMouseUp && onMouseUp();
+
               return filteredItems;
             } else {
               allValues.push(val);
+              onChange(allValues);
               return allValues;
             }
           } else {
+            onChange([val]);
+            onMouseUp && onMouseUp();
+
             return [val];
           }
         });
       } else {
         if (!values) {
+          onChange(val);
+          onMouseUp && onMouseUp();
+
           setValues(val);
         }
         if (val === values) {
           setValues(null);
         } else {
+          onChange(val);
+          onMouseUp && onMouseUp();
+
           setValues(val);
         }
       }
     };
     useEffect(() => {
       updatePosition();
-      onChange(values);
     }, [values]);
+    useEffect(() => {
+      setValues(value || null);
+    }, [value]);
     return (
       <>
         <div className={combinedInputDiv}>
@@ -207,6 +227,7 @@ const SelectInput = forwardRef(
             <div
               className={combinedInputStles}
               ref={inputRef}
+              onMouseUp={onMouseUp}
               onClick={() => {
                 if (!disabled) {
                   setOpen(!open);
@@ -219,7 +240,7 @@ const SelectInput = forwardRef(
                   <div className="flex items-center mr-3">{leftSection}</div>
                 )}
 
-                <div className="flex flex-wrap gap-1" onMouseUp={onMouseUp}>
+                <div className="flex flex-wrap gap-1">
                   {multiple ? (
                     showChip && Array.isArray(values) && values.length > 0 ? (
                       values.map((v) => (
@@ -227,8 +248,13 @@ const SelectInput = forwardRef(
                           key={v}
                           className="bg-slate-200 px-2 rounded-2xl flex justify-between items-center "
                         >
-                          <p className="text-center min-w-10 text-xs">{v}</p>
-                          <FaXmark size={12} />
+                          {renderOption ? (
+                            renderOption(v)
+                          ) : (
+                            <p className="text-center min-w-10 text-xs">{v}</p>
+                          )}
+
+                          <FaXmark size={12} className="ml-2" />
                         </div>
                       ))
                     ) : (
