@@ -33,18 +33,22 @@ const Clients = () => {
   const columns: IColumns<IClient>[] = [
     {
       key: "firstname",
+      sort: true,
       label: "First Name",
     },
     {
       key: "lastname",
+      sort: true,
       label: "Last Name",
     },
     {
       key: "email",
+      sort: true,
       label: "Email",
     },
     {
       key: "phoneNumber",
+      sort: true,
       label: "Phone Number",
     },
   ];
@@ -80,6 +84,9 @@ const Clients = () => {
             setTableParams((prev) => {
               return { ...prev, page: val };
             });
+          }}
+          onSortClick={(sort) => {
+            setTableParams({ ...tableParams, sort });
           }}
           onRowItemClick={(row) =>
             navigate(`${DASHBOARD_PATHS.EDIT_CLIENT}/${row._id}`)

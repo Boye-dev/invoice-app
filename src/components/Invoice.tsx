@@ -70,7 +70,6 @@ const Invoice = ({
 
         formData.append("email", form.getValues().client.email);
         formData.append("user", profile?.data?.businessEmail || "");
-        console.log(profile?.data?.businessEmail);
         mutate(formData);
       });
   };

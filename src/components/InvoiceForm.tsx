@@ -2,8 +2,8 @@ import TextInput from "../shared/components/TextInput";
 import Button from "../shared/components/Button";
 import SelectInput from "../shared/components/SelectInput";
 import { getProducts } from "../services/product.service";
-import { useQuery } from "@tanstack/react-query";
-import { getClients } from "../services/client.service";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getClientsInfinite } from "../services/client.service";
 import Menu from "../shared/components/Menu";
 import { FaPlus, FaTrash, FaUsers } from "react-icons/fa";
 import { CreateInvoice, PaymentStatus } from "../interfaces/invoice.interface";
@@ -19,6 +19,13 @@ import LoadingLogo from "../shared/components/LoadingLogo";
 import Invoice from "./Invoice";
 import { getDecodedJwt } from "../api/Auth";
 import { getUserById } from "../services/user.service";
+import { IProductParams } from "../interfaces/product.interface";
+import useFilter from "../hooks/useFilter";
+import { IClient, IClientParams } from "../interfaces/client.interface";
+import { ApiResponse } from "../interfaces/helper.interface";
+import { IGetAll } from "../services/invoice.service";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 export interface IInvoiceForm {
   form: UseFormReturn<CreateInvoice, any, undefined>;
@@ -58,22 +65,61 @@ const InvoiceForm = ({
     control,
     name: "products",
   });
+  const { params: tableParamsClient } = useFilter<IClientParams>({
+    defaultParams: {
+      page: 0,
+      pageSize: 10,
+    },
+  });
+  const { ref, inView } = useInView();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["clients"],
-    queryFn: () => getClients(),
+  const { fetchNextPage, hasNextPage, data } = useInfiniteQuery({
+    queryKey: ["clients-infinte", tableParamsClient],
+
+    queryFn: ({ pageParam = 0 }) =>
+      getClientsInfinite({ ...tableParamsClient, page: pageParam }),
+    initialPageParam: 0,
+    getNextPageParam: (
+      lastPage: ApiResponse<IGetAll<IClient>>,
+      pages: ApiResponse<IGetAll<IClient>>[]
+    ) => {
+      const totalItems = lastPage?.data?.total || 0;
+      const itemsLoaded = pages.reduce(
+        (total: number, page: ApiResponse<IGetAll<IClient>>) =>
+          total + (page.data?.results.length || 0),
+        0
+      );
+
+      if (itemsLoaded < totalItems) {
+        return pages.length;
+      }
+
+      return undefined;
+    },
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage]);
+
+  const { params: tableParamsProducts, setSearch } = useFilter<IProductParams>({
+    defaultParams: {
+      page: 0,
+      pageSize: 10,
+    },
   });
   const { data: products, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["products"],
-    queryFn: () => getProducts(),
+    queryKey: ["products", tableParamsProducts],
+    queryFn: () => getProducts(tableParamsProducts),
   });
   const id = getDecodedJwt()?.id || "";
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["profile", id],
     queryFn: () => getUserById(id),
   });
-
-  return isLoadingProducts || isLoading || isProfileLoading ? (
+  return isProfileLoading ? (
     <div className="bg-white w-full h-dvh flex justify-center items-center top-0">
       <div className="w-20">
         <LoadingLogo />
@@ -118,15 +164,27 @@ const InvoiceForm = ({
                     </div>
                   }
                   data={
-                    data?.data.data?.results?.map((item) => {
-                      return {
-                        label: `${item.firstname} ${item.lastname}`,
-                        onClick: () => {
-                          setValue("client", item);
-                          trigger("client");
-                        },
-                      };
-                    }) || []
+                    data?.pages
+                      .flatMap((page) => page.data?.results)
+                      .map((item, i) => {
+                        return {
+                          label: `${item?.firstname} ${item?.lastname}`,
+                          onClick: () => {
+                            item && setValue("client", item);
+                            trigger("client");
+                          },
+                          ...(data?.pages.flatMap((page) => page.data?.results)
+                            .length ===
+                            i + 1 && {
+                            render: () => (
+                              <p
+                                className="ml-2"
+                                ref={ref}
+                              >{`${item?.firstname} ${item?.lastname}`}</p>
+                            ),
+                          }),
+                        };
+                      }) || []
                   }
                 />
               )}
@@ -201,6 +259,10 @@ const InvoiceForm = ({
               <SelectInput
                 value={form.getValues().products[index].productId}
                 label="Products"
+                loading={isLoadingProducts}
+                searchable
+                serverSearch
+                handleSearch={(search) => setSearch(search)}
                 placeholder="Select Products"
                 inputDivStyles="w-full"
                 renderOption={(item) => (
@@ -226,7 +288,6 @@ const InvoiceForm = ({
                   `products.${index}.productId`
                 )}
                 onChange={(val) => {
-                  console.log({ val });
                   if (!val) {
                     setValue(`products.${index}.productId`, "");
                   } else {
@@ -264,7 +325,6 @@ const InvoiceForm = ({
                 onChange={(e) => {
                   const productsData = form.getValues().productsData || [];
                   productsData[index].quantity = e.target.value;
-                  console.log({ productsData });
                   setValue("productsData", productsData);
                 }}
               />

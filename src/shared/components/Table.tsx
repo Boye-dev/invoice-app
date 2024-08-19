@@ -1,5 +1,5 @@
-import React from "react";
-import { FaSortAlphaDown } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
 import TablePagination, { ITablePagination } from "./TablePagination";
 import LoadingLogo from "./LoadingLogo";
 import empty from "../../assets/empty.webp";
@@ -7,6 +7,7 @@ export interface IColumns<T> {
   key: keyof T;
   label: string;
   width?: string | number;
+  sort?: boolean;
   render?: (_row: T) => JSX.Element;
 }
 interface ITable<T> extends ITablePagination {
@@ -19,6 +20,7 @@ interface ITable<T> extends ITablePagination {
   ) => void;
   checkbox?: boolean;
   onRowItemClick?: (value: T) => void;
+  onSortClick?: (sort: string) => void;
   loading?: boolean;
 }
 const Table = <T extends { _id?: string; id?: string }>(props: ITable<T>) => {
@@ -28,6 +30,7 @@ const Table = <T extends { _id?: string; id?: string }>(props: ITable<T>) => {
     checkbox = false,
     handleCheckedItems,
     onRowItemClick,
+    onSortClick,
     pageNumber,
     pageSize,
     total,
@@ -35,7 +38,12 @@ const Table = <T extends { _id?: string; id?: string }>(props: ITable<T>) => {
     onPageChange,
     loading,
   } = props;
-
+  const [sort, setSort] = useState("");
+  useEffect(() => {
+    if (sort) {
+      onSortClick && onSortClick(sort);
+    }
+  }, [sort, onSortClick]);
   const renderHead = () => (
     <tr className="w-full">
       {checkbox && <th className="min-w-[50px]"></th>}
@@ -44,8 +52,28 @@ const Table = <T extends { _id?: string; id?: string }>(props: ITable<T>) => {
           <th key={col.key as string} className={`pb-5 min-w-[200px]`}>
             <div className="flex items-center">
               <p>{col.label as React.ReactNode}</p>
-              {col.key !== "_id" && <FaSortAlphaDown className="ml-2" />}
-              {/* <FaSortAlphaUpAlt /> */}
+              {col.sort ? (
+                sort.includes(col.key as string) ? (
+                  sort.startsWith("-") ? (
+                    <FaSortAlphaUpAlt
+                      className="ml-2 cursor-pointer"
+                      onClick={() => setSort(`${col.key as string}`)}
+                    />
+                  ) : (
+                    <FaSortAlphaDown
+                      className="ml-2 cursor-pointer"
+                      onClick={() => setSort(`-${col.key as string}`)}
+                    />
+                  )
+                ) : (
+                  <FaSortAlphaDown
+                    className="ml-2 cursor-pointer"
+                    onClick={() => setSort(`-${col.key as string}`)}
+                  />
+                )
+              ) : (
+                <span></span>
+              )}
             </div>
           </th>
         );

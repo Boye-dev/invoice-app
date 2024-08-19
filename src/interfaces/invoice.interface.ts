@@ -1,7 +1,3 @@
-// import { IClient } from "./client.interface";
-// import { IParams } from "./helper.interface";
-// import { IProduct } from "./product.interface";
-
 import { IClient } from "./client.interface";
 import { IParams } from "./helper.interface";
 import { IProduct } from "./product.interface";

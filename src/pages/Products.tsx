@@ -37,10 +37,12 @@ const Products = () => {
     },
     {
       key: "name",
+      sort: true,
       label: "Name",
     },
     {
       key: "price",
+      sort: true,
       label: "Price",
     },
   ];
@@ -76,6 +78,9 @@ const Products = () => {
             setTableParams((prev) => {
               return { ...prev, page: val };
             });
+          }}
+          onSortClick={(sort) => {
+            setTableParams({ ...tableParams, sort });
           }}
           onRowItemClick={(row) =>
             navigate(`${DASHBOARD_PATHS.EDIT_PRODUCT}/${row._id}`)

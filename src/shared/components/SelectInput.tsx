@@ -9,6 +9,7 @@ import { forwardRef } from "react";
 import clsx from "clsx";
 import { FaCheck, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
+import Loader from "./Loader";
 
 interface ISelectInput {
   placeholder?: string;
@@ -37,6 +38,10 @@ interface ISelectInput {
   }[];
   renderOption?: (item: any) => React.ReactNode;
   defaultValue?: string | number | (string | number)[];
+  searchable?: boolean;
+  handleSearch?: (search: string) => void;
+  serverSearch?: boolean;
+  loading?: boolean;
 }
 const SelectInput = forwardRef(
   (props: ISelectInput, ref: ForwardedRef<HTMLInputElement>) => {
@@ -62,8 +67,18 @@ const SelectInput = forwardRef(
       defaultValue = null,
       showChip = true,
       value,
+      searchable,
+      handleSearch,
+      serverSearch,
+      loading,
     } = props;
     const [open, setOpen] = useState(false);
+    const [statefulData, setStatefulData] = useState(data);
+    const [search, setSearch] = useState<string>("");
+
+    useEffect(() => {
+      setStatefulData(data);
+    }, [data]);
     const [values, setValues] = useState<
       string | number | (string | number)[] | null
     >(() => {
@@ -72,7 +87,7 @@ const SelectInput = forwardRef(
       }
       return defaultValue;
     });
-    const baseInputStyles = `cursor-pointer bg-white border border-solid border-gray-900 outline-none px-3 py-3 px-4 rounded-lg text-sm placeholder:text-gray-400 focus:border-blue-400 focus:border-2 flex justify-between items-center`;
+    const baseInputStyles = `cursor-pointer bg-white border border-solid border-gray-900 outline-none px-3 py-3 px-4 rounded-lg text-sm placeholder:text-gray-400 focus:border-blue-400 focus:border-2 flex justify-between items-center gap-2`;
     const combinedInputStles = clsx(baseInputStyles, {
       [`${inputStyles}`]: Boolean(inputStyles),
       "border-2 border-red-700": error,
@@ -213,10 +228,27 @@ const SelectInput = forwardRef(
     };
     useEffect(() => {
       updatePosition();
-    }, [values]);
+    }, [values, data]);
     useEffect(() => {
       setValues(value || null);
     }, [value]);
+    useEffect(() => {
+      const searchValue = () => {
+        const filteredData = data.filter((item) =>
+          item.label.toLowerCase().includes(search.toLowerCase())
+        );
+        setStatefulData(filteredData);
+      };
+      serverSearch ? handleSearch && handleSearch(search) : searchValue();
+    }, [search, handleSearch, data, serverSearch]);
+    const removeValues = (v: string | number) => {
+      setValues((prev) => {
+        const filteredItems = Array.isArray(prev)
+          ? prev.filter((item) => item !== v)
+          : [];
+        return filteredItems;
+      });
+    };
     return (
       <>
         <div className={combinedInputDiv}>
@@ -225,6 +257,31 @@ const SelectInput = forwardRef(
               {label}
             </label>
           )}
+          <div className="flex gap-2">
+            {searchable &&
+              multiple &&
+              showChip &&
+              Array.isArray(values) &&
+              values.length > 0 &&
+              values.map((v) => (
+                <div
+                  key={v}
+                  className="bg-slate-200 px-2 rounded-2xl flex justify-between items-center "
+                >
+                  {renderOption ? (
+                    renderOption(v)
+                  ) : (
+                    <p className="text-center min-w-10 text-xs">{v}</p>
+                  )}
+
+                  <FaXmark
+                    size={12}
+                    className="ml-2 cursor-pointer"
+                    onClick={() => removeValues(v)}
+                  />
+                </div>
+              ))}
+          </div>
           <div className="w-full h-auto">
             <div
               className={combinedInputStles}
@@ -237,41 +294,57 @@ const SelectInput = forwardRef(
                 }
               }}
             >
-              <div className="flex items-center">
+              <div className="flex items-center w-full">
                 {leftSection && (
                   <div className="flex items-center mr-3">{leftSection}</div>
                 )}
+                {searchable ? (
+                  <div className="w-full">
+                    <input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      type="text"
+                      className="border-none outline-none w-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1 w-full">
+                    {multiple ? (
+                      showChip && Array.isArray(values) && values.length > 0 ? (
+                        values.map((v) => (
+                          <div
+                            key={v}
+                            className="bg-slate-200 px-2 rounded-2xl flex justify-between items-center "
+                          >
+                            {renderOption ? (
+                              renderOption(v)
+                            ) : (
+                              <p className="text-center min-w-10 text-xs">
+                                {v}
+                              </p>
+                            )}
 
-                <div className="flex flex-wrap gap-1">
-                  {multiple ? (
-                    showChip && Array.isArray(values) && values.length > 0 ? (
-                      values.map((v) => (
-                        <div
-                          key={v}
-                          className="bg-slate-200 px-2 rounded-2xl flex justify-between items-center "
-                        >
-                          {renderOption ? (
-                            renderOption(v)
-                          ) : (
-                            <p className="text-center min-w-10 text-xs">{v}</p>
-                          )}
-
-                          <FaXmark size={12} className="ml-2" />
-                        </div>
-                      ))
+                            <FaXmark
+                              size={12}
+                              className="ml-2 cursor-pointer"
+                              onClick={() => removeValues(v)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-slate-500">{placeholder}</p>
+                      )
+                    ) : values ? (
+                      renderOption ? (
+                        renderOption(values)
+                      ) : (
+                        <p>{values}</p>
+                      )
                     ) : (
                       <p className="text-slate-500">{placeholder}</p>
-                    )
-                  ) : values ? (
-                    renderOption ? (
-                      renderOption(values)
-                    ) : (
-                      <p>{values}</p>
-                    )
-                  ) : (
-                    <p className="text-slate-500">{placeholder}</p>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
               {rightSection ? (
                 <div className="flex items-center ">{rightSection}</div>
@@ -293,32 +366,46 @@ const SelectInput = forwardRef(
                 top: position.top + position.height,
               }}
             >
-              {data.map((item) => (
-                <div key={item.label}>
-                  <div
-                    className="cursor-pointer flex items-center hover:bg-slate-100"
-                    key={item.value}
-                    onClick={() => handleSelect(item)}
-                  >
-                    {multiple
-                      ? Array.isArray(values) &&
-                        values.find((val) => val === item.value) && (
-                          <FaCheck className="text-slate-500 ml-3" size={10} />
-                        )
-                      : values === item.value && (
-                          <FaCheck className="text-slate-500 ml-3" size={10} />
-                        )}
-                    {item.render ? (
-                      <div className="w-full">
-                        {item.render(item) as React.ReactNode}
-                      </div>
-                    ) : (
-                      <p className="p-2"> {item.label}</p>
-                    )}
-                  </div>
-                  <hr className="last:hidden" />
+              {loading ? (
+                <div className="flex items-center justify-center gap-5">
+                  <Loader className="fill-white" />
                 </div>
-              ))}
+              ) : statefulData.length === 0 ? (
+                <p>No options</p>
+              ) : (
+                statefulData.map((item) => (
+                  <div key={item.label}>
+                    <div
+                      className="cursor-pointer flex items-center hover:bg-slate-100"
+                      key={item.value}
+                      onClick={() => handleSelect(item)}
+                    >
+                      {multiple
+                        ? Array.isArray(values) &&
+                          values.find((val) => val === item.value) && (
+                            <FaCheck
+                              className="text-slate-500 ml-3"
+                              size={10}
+                            />
+                          )
+                        : values === item.value && (
+                            <FaCheck
+                              className="text-slate-500 ml-3"
+                              size={10}
+                            />
+                          )}
+                      {item.render ? (
+                        <div className="w-full">
+                          {item.render(item) as React.ReactNode}
+                        </div>
+                      ) : (
+                        <p className="p-2"> {item.label}</p>
+                      )}
+                    </div>
+                    <hr className="last:hidden" />
+                  </div>
+                ))
+              )}
             </div>
           </div>
           {error && <p className="text-red-700 text-xs ">{helperText}</p>}

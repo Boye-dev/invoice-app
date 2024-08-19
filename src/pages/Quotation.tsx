@@ -46,6 +46,7 @@ const Quotation = () => {
     },
     {
       key: "name",
+      sort: true,
       label: "Name",
     },
 
@@ -114,6 +115,9 @@ const Quotation = () => {
           onRowItemClick={(row) =>
             navigate(`${DASHBOARD_PATHS.EDIT_QUOTATION}/${row._id}`)
           }
+          onSortClick={(sort) => {
+            setTableParams({ ...tableParams, sort });
+          }}
           loading={isLoading}
         />
       </div>

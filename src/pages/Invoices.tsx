@@ -47,6 +47,7 @@ const Invoices = () => {
     {
       key: "name",
       label: "Name",
+      sort: true,
     },
 
     {
@@ -108,6 +109,9 @@ const Invoices = () => {
           onRowItemClick={(row) =>
             navigate(`${DASHBOARD_PATHS.EDIT_INVOICE}/${row._id}`)
           }
+          onSortClick={(sort) => {
+            setTableParams({ ...tableParams, sort });
+          }}
           loading={isLoading}
         />
       </div>
