@@ -37,6 +37,9 @@ const schema = z.object({
   businessCountry: z
     .string()
     .min(1, { message: "Business Country is required" }),
+  businessCurrency: z
+    .string()
+    .min(1, { message: "Business Currency is required" }),
   businessPhone: z.string().min(10, { message: "Business Phone is required" }),
   businessEmail: z.string().email({ message: "Invalid email address" }),
   businessWebsite: z.string(),
@@ -78,6 +81,7 @@ const SignUp = () => {
     data.append("businessZip", values.businessZip);
     data.append("businessCountry", values.businessCountry);
     data.append("businessPhone", values.businessPhone);
+    data.append("businessCurrency", values.businessCurrency);
     data.append("businessEmail", values.businessEmail);
     data.append("password", values.password);
 
@@ -259,7 +263,15 @@ const SignUp = () => {
         helperText={errors["businessEmail"]?.message as string}
         fullWidth
       />
-
+      <TextInput
+        {...register("businessCurrency")}
+        label="Business Currency"
+        placeholder="Enter Business Currency"
+        error={Boolean(errors["businessCurrency"])}
+        onKeyUp={() => trigger("businessCurrency")}
+        helperText={errors["businessCurrency"]?.message as string}
+        fullWidth
+      />
       <TextInput
         {...register("businessWebsite")}
         label="Business Website"

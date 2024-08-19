@@ -15,6 +15,7 @@ export interface CreateUserRequest {
   businessPhone: string;
   businessEmail: string;
   businessWebsite?: string;
+  businessCurrency: string;
   businessLogo: FileWithUrl[] | null;
   confirmPassword: string;
   profilePicture: FileWithUrl[] | null;
@@ -64,4 +65,5 @@ export interface IUser {
   resetToken?: string;
   resetTokenExpires?: Date;
   verified: boolean;
+  businessCurrency: string;
 }

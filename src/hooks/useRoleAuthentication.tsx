@@ -32,9 +32,11 @@ const useRoleAuthentication = (): {
     const response = await axios.post(`${baseURL}/users/refresh`, {
       token: getRefreshToken(),
     });
-    setToken(response.data.data.accessToken);
-    setAuthenticated(true);
-    setLoading(false);
+    if (response.data) {
+      setToken(response.data.data.accessToken);
+      setAuthenticated(true);
+      setLoading(false);
+    }
   };
   useEffect(() => {
     if (decodedToken && decodedToken.id) {
@@ -46,12 +48,18 @@ const useRoleAuthentication = (): {
           setAuthenticated(true);
         } else {
           const decodedRefreshToken = getDecodedRefreshJwt();
-          const { exp: refreshExpiry } = decodedRefreshToken;
-          if (refreshExpiry) {
-            if (refreshExpiry * 1000 > Date.now()) {
-              try {
-                refreshJwt();
-              } catch (e) {
+          if (decodedRefreshToken) {
+            const { exp: refreshExpiry } = decodedRefreshToken;
+            if (refreshExpiry) {
+              if (refreshExpiry * 1000 > Date.now()) {
+                try {
+                  refreshJwt();
+                } catch (e) {
+                  removeToken();
+                  setLoading(false);
+                  setAuthenticated(false);
+                }
+              } else {
                 removeToken();
                 setLoading(false);
                 setAuthenticated(false);

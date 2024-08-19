@@ -4,6 +4,7 @@ export const AUTH_ROUTES = {
   SIGN_UP: "/sign-up",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password/:id/:token",
+  HOME: "/",
 };
 
 export const DASHBOARD_PATHS = {

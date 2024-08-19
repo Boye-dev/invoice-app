@@ -31,6 +31,9 @@ const schema = z.object({
   profilePicture: z.array(z.instanceof(File)),
   businessLogo: z.array(z.instanceof(File)),
   businessName: z.string().min(1, { message: "Business Name is required" }),
+  businessCurrency: z
+    .string()
+    .min(1, { message: "Business Currency is required" }),
   businessAddress: z
     .string()
     .min(1, { message: "Business Address is required" }),
@@ -141,6 +144,7 @@ const ProfileForm = ({
       formData.append("businessCountry", values.businessCountry || "");
       formData.append("businessPhone", values.businessPhone || "");
       formData.append("businessEmail", values.businessEmail || "");
+      formData.append("businessCurrency", values.businessCurrency || "");
 
       if (values.businessWebsite)
         formData.append("businessWebsite", values.businessWebsite);
@@ -274,7 +278,16 @@ const ProfileForm = ({
           helperText={errors["businessCountry"]?.message as string}
           fullWidth
         />
-
+        <TextInput
+          withAsterisks
+          {...register("businessCurrency")}
+          label="Business Currency"
+          placeholder="Enter Business Currency"
+          error={Boolean(errors["businessCurrency"])}
+          onKeyUp={() => trigger("businessCurrency")}
+          helperText={errors["businessCurrency"]?.message as string}
+          fullWidth
+        />
         <TextInput
           withAsterisks
           {...register("businessPhone")}

@@ -27,6 +27,7 @@ interface ITextInput {
   leftSection?: React.ReactNode;
   withAsterisks?: boolean;
   textarea?: boolean;
+  number?: boolean;
 }
 const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
   const {
@@ -49,6 +50,7 @@ const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
     inputDivStyles,
     withAsterisks,
     textarea,
+    number,
   } = props;
   const baseInputStyles = `w-full border border-solid border-gray-900 outline-none p-3 px-4 rounded-lg text-sm placeholder:text-gray-400 focus:border-blue-400 focus:border-2 after:c`;
   const combinedInputStles = clsx(baseInputStyles, {
@@ -107,7 +109,7 @@ const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
               onChange={(e) => onChange && onChange(e)}
               onBlur={(e) => onBlur && onBlur(e)}
               onKeyUp={(e) => onKeyUp && onKeyUp(e)}
-              type="text"
+              type={number ? "number" : "text"}
               className={combinedInputStles}
             />
           )}

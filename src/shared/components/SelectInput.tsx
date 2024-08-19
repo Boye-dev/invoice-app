@@ -200,6 +200,8 @@ const SelectInput = forwardRef(
           setValues(val);
         }
         if (val === values) {
+          onChange(null);
+
           setValues(null);
         } else {
           onChange(val);

@@ -5,24 +5,30 @@ import { getProducts } from "../services/product.service";
 import { useQuery } from "@tanstack/react-query";
 import { getClients } from "../services/client.service";
 import Menu from "../shared/components/Menu";
-import { FaUsers } from "react-icons/fa";
+import { FaPlus, FaTrash, FaUsers } from "react-icons/fa";
 import { CreateInvoice, PaymentStatus } from "../interfaces/invoice.interface";
 import { convertAllUpperCaseToSentenceCase } from "../utils/textHelpers";
 import {
   FieldValues,
   Path,
+  useFieldArray,
   UseFormRegister,
   UseFormReturn,
 } from "react-hook-form";
 import LoadingLogo from "../shared/components/LoadingLogo";
+import Invoice from "./Invoice";
+import { getDecodedJwt } from "../api/Auth";
+import { getUserById } from "../services/user.service";
 
-interface IInvoiceForm {
+export interface IInvoiceForm {
   form: UseFormReturn<CreateInvoice, any, undefined>;
 
   onSubmit: (values: CreateInvoice) => void;
   loading?: boolean;
   quotation?: boolean;
   edit?: boolean;
+  preview?: boolean;
+  setPreview: React.Dispatch<React.SetStateAction<boolean>>;
 }
 function getInputProps<T extends FieldValues>(
   register: UseFormRegister<T>,
@@ -37,6 +43,7 @@ const InvoiceForm = ({
   onSubmit,
   loading,
   quotation,
+  preview,
   edit,
 }: IInvoiceForm) => {
   const {
@@ -45,7 +52,13 @@ const InvoiceForm = ({
     trigger,
     setValue,
     formState: { errors },
+    control,
   } = form;
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "products",
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: () => getClients(),
@@ -54,12 +67,24 @@ const InvoiceForm = ({
     queryKey: ["products"],
     queryFn: () => getProducts(),
   });
-  return isLoadingProducts || isLoading ? (
+  const id = getDecodedJwt()?.id || "";
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["profile", id],
+    queryFn: () => getUserById(id),
+  });
+
+  return isLoadingProducts || isLoading || isProfileLoading ? (
     <div className="bg-white w-full h-dvh flex justify-center items-center top-0">
       <div className="w-20">
         <LoadingLogo />
       </div>
     </div>
+  ) : preview ? (
+    <Invoice
+      form={form}
+      profile={profile}
+      invoiceNumber={form.getValues()?.invoiceNumber}
+    />
   ) : (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -171,31 +196,130 @@ const InvoiceForm = ({
               Items {quotation || "& Payment"}{" "}
             </p>
           </div>
-          <SelectInput
-            multiple
-            value={form.getValues().products}
-            label="Products"
-            placeholder="Select Products"
-            inputDivStyles="w-full"
-            renderOption={(item) => (
-              <span>
-                {products?.data.data?.results.find((v) => v._id === item)?.name}
-              </span>
-            )}
-            data={
-              products?.data.data?.results?.map((item) => {
-                return {
-                  label: `${item.name}`,
-                  value: item._id,
-                };
-              }) || []
-            }
-            error={Boolean(errors.products)}
-            {...getInputProps<CreateInvoice>(register, "products")}
-            onChange={(val) => setValue("products", val as string[])}
-            onMouseUp={() => trigger("products")}
-            helperText={errors.products?.message as string}
+          {fields.map((item, index) => (
+            <div key={item.id}>
+              <SelectInput
+                value={form.getValues().products[index].productId}
+                label="Products"
+                placeholder="Select Products"
+                inputDivStyles="w-full"
+                renderOption={(item) => (
+                  <span>
+                    {
+                      products?.data.data?.results.find((v) => v._id === item)
+                        ?.name
+                    }
+                  </span>
+                )}
+                data={
+                  products?.data.data?.results?.map((item) => {
+                    return {
+                      label: `${item.name}`,
+                      value: item._id,
+                    };
+                  }) || []
+                }
+                error={Boolean(errors?.products?.[index]?.productId)}
+                helperText={errors?.products?.[index]?.productId?.message}
+                {...getInputProps<CreateInvoice>(
+                  register,
+                  `products.${index}.productId`
+                )}
+                onChange={(val) => {
+                  console.log({ val });
+                  if (!val) {
+                    setValue(`products.${index}.productId`, "");
+                  } else {
+                    typeof val === "string" &&
+                      setValue(`products.${index}.productId`, val);
+                  }
+
+                  const productsData = [...form.getValues().products];
+                  const newProductsData = productsData.map((item) => {
+                    const isProduct = products?.data.data?.results.find(
+                      (value) => value._id === item.productId
+                    );
+
+                    if (isProduct) {
+                      return {
+                        ...item,
+                        productId: isProduct,
+                      };
+                    }
+                    return { ...item, productId: null };
+                  });
+
+                  setValue("productsData", newProductsData);
+                }}
+                onMouseUp={() => trigger(`products.${index}.productId`)}
+              />
+              <TextInput
+                number
+                label="Quantity"
+                placeholder="Enter quantity"
+                {...register(`products.${index}.quantity`)}
+                error={Boolean(errors?.products?.[index]?.quantity)}
+                helperText={errors?.products?.[index]?.quantity?.message}
+                fullWidth
+                onChange={(e) => {
+                  const productsData = form.getValues().productsData || [];
+                  productsData[index].quantity = e.target.value;
+                  console.log({ productsData });
+                  setValue("productsData", productsData);
+                }}
+              />
+              <FaTrash
+                className="text-red-700 my-5 cursor-pointer"
+                onClick={() => {
+                  remove(index);
+                  const productsData = [...form.getValues().products];
+                  const newProductsData = productsData.map((item) => {
+                    const isProduct = products?.data.data?.results.find(
+                      (value) => value._id === item.productId
+                    );
+
+                    if (isProduct) {
+                      return {
+                        ...item,
+                        productId: isProduct,
+                      };
+                    }
+                    return { ...item, productId: null };
+                  });
+
+                  setValue("productsData", newProductsData);
+                }}
+              />
+            </div>
+          ))}
+          <FaPlus
+            onClick={() => {
+              append({ productId: "", quantity: "" });
+              const productsData = [...form.getValues().products];
+              const newProductsData = productsData.map((item) => {
+                const isProduct = products?.data.data?.results.find(
+                  (value) => value._id === item.productId
+                );
+
+                if (isProduct) {
+                  return {
+                    ...item,
+                    productId: isProduct,
+                  };
+                }
+                return { ...item, productId: null };
+              });
+
+              setValue("productsData", newProductsData);
+            }}
+            className="cursor-pointer"
           />
+          {Boolean(errors?.products?.root) && (
+            <p className="text-red-700 text-xs">
+              {errors?.products?.root?.message}
+            </p>
+          )}
+
           {!quotation && (
             <SelectInput
               value={form.getValues().paymentStatus}

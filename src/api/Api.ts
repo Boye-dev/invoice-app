@@ -38,7 +38,7 @@ Api.interceptors.request.use(
       if (!response.data) {
         return config;
       }
-      setToken(response.data.accessToken);
+      setToken(response.data.data.accessToken);
       updatedConfig.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
     }
     return updatedConfig;
@@ -50,8 +50,10 @@ Api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (
-      error?.response?.status === 401 &&
-      error?.response?.data?.message === "Unauthorized"
+      error?.response?.data?.message === "Unauthorized" ||
+      error?.response?.data?.error === "Invalid Token" ||
+      error?.response?.data?.error === "JsonWebTokenError" ||
+      error?.response?.data?.error === "TokenExpiredError"
     ) {
       removeToken();
       window.location.reload();

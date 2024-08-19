@@ -1,8 +1,4 @@
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import { AUTH_ROUTES, DASHBOARD_PATHS } from "./constants/routes";
 import SignUp from "./pages/Auth/SignUp";
@@ -27,12 +23,13 @@ import ResetPassword from "./pages/Auth/ResetPassword";
 import NewInvoice from "./pages/NewInvoice";
 import NewClient from "./pages/NewClient";
 import UserLayout from "./shared/layout/UserLayout";
+import Home from "./pages/Home";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Navigate to={AUTH_ROUTES.LOGIN} />,
+      element: <Home />,
     },
     {
       path: AUTH_ROUTES.VERIFY,

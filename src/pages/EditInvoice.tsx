@@ -12,18 +12,31 @@ import {
   InvoiceType,
   PaymentStatus,
 } from "../interfaces/invoice.interface";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingLogo from "../shared/components/LoadingLogo";
+import { getDecodedJwt } from "../api/Auth";
+import { getUserById } from "../services/user.service";
+import Invoice from "../components/Invoice";
+import { getProducts } from "../services/product.service";
 
 const EditInvoice = () => {
   useTitle("Edit Invoice | Invoice App");
 
   const { id = "" } = useParams();
+  const [preview, setPreview] = useState(false);
+  const [completed, setCompleted] = useState(false);
+
   const schema = z.object({
     name: z.string().min(2, { message: "Name is required" }),
     products: z
-      .array(z.string(), { message: "Please select a product" })
+      .array(
+        z.object({
+          productId: z.string().min(1, { message: "Enter product" }),
+          quantity: z.string().min(1, { message: "Enter quantity" }),
+        }),
+        { message: "Please select a product" }
+      )
       .min(1, { message: "Please select a product" }),
     paymentStatus: z.enum(
       [...Object.values(PaymentStatus)] as [PaymentStatus, ...PaymentStatus[]],
@@ -37,6 +50,11 @@ const EditInvoice = () => {
       phoneNumber: z.string().min(10, { message: "Phone is required" }),
       _id: z.string().optional(),
     }),
+  });
+  const decodedId = getDecodedJwt()?.id || "";
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["profile", decodedId],
+    queryFn: () => getUserById(decodedId),
   });
   const form = useForm<CreateInvoice>({
     resolver: zodResolver(schema),
@@ -53,12 +71,21 @@ const EditInvoice = () => {
       },
     },
   });
-  const { mutate, isPending } = useMutation({
+  const { data: allproducts, isLoading: isLoadingProducts } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => getProducts(),
+  });
+  const {
+    mutate,
+    isPending,
+    data: mutatedData,
+  } = useMutation({
     mutationFn: editInvoice,
     onError: (error) => {
       handleErrors(error);
     },
     onSuccess: (res) => {
+      setCompleted(true);
       toast.success(res.message);
     },
   });
@@ -71,15 +98,38 @@ const EditInvoice = () => {
     if (isSuccess) {
       if (data?.data.data) {
         const { products, ...payload } = data.data.data;
-        const productsData = products as string[];
-        form.reset({ ...payload, products: productsData });
+        const productsData = products;
+
+        const newProductsData = productsData.map((item) => {
+          const isProduct = allproducts?.data.data?.results.find(
+            (value) => value._id === item.productId
+          );
+
+          if (isProduct) {
+            return {
+              ...item,
+              productId: isProduct,
+            };
+          }
+          return { ...item, productId: null };
+        });
+        form.reset({
+          ...payload,
+          products: productsData.map((item) => {
+            return { ...item, quantity: String(item.quantity) };
+          }) as {
+            productId: string;
+            quantity: number | string;
+          }[],
+          productsData: newProductsData,
+        });
       }
     }
-  }, [isSuccess, data?.data.data, form]);
+  }, [isSuccess, data?.data.data, form, allproducts]);
   const submitSignUp = (values: CreateInvoice) => {
     mutate({ ...values, type: InvoiceType.INVOICE, id });
   };
-  return isLoading ? (
+  return isLoading || isLoadingProducts ? (
     <div className="w-full h-dvh flex justify-center items-center">
       <div className="w-20">
         <LoadingLogo />
@@ -87,15 +137,47 @@ const EditInvoice = () => {
     </div>
   ) : (
     <div className="px-3 pb-10 pt-10 md:p-20">
-      <p className="font-bold italic mb-2">
-        Fill in all information to edit this invoice
-      </p>
-      <InvoiceForm
-        form={form}
-        loading={isPending}
-        onSubmit={submitSignUp}
-        edit
-      />
+      {completed ? (
+        isProfileLoading ? (
+          <div className="bg-white w-full h-dvh flex justify-center items-center top-0">
+            <div className="w-20">
+              <LoadingLogo />
+            </div>
+          </div>
+        ) : (
+          <>
+            <Invoice
+              form={form}
+              profile={profile}
+              invoiceNumber={mutatedData?.data?.invoiceNumber}
+              download
+            />
+          </>
+        )
+      ) : (
+        <>
+          <div className="flex items-center justify-between">
+            <p className="font-bold italic mb-2">
+              Fill in all information to edit invoice
+            </p>
+            <div>
+              <input
+                type="checkbox"
+                onChange={(e) => setPreview(e.target.checked)}
+              />
+              <label className="ml-2">Preview Mode</label>
+            </div>
+          </div>
+          <InvoiceForm
+            form={form}
+            loading={isPending}
+            onSubmit={submitSignUp}
+            preview={preview}
+            setPreview={setPreview}
+            edit
+          />
+        </>
+      )}
     </div>
   );
 };

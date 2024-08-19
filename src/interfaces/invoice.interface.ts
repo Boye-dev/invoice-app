@@ -20,7 +20,10 @@ export interface IInvoice {
   name: string;
   user: string;
   client: IClient;
-  products: (string | IProduct)[];
+  products: {
+    productId: string | IProduct;
+    quantity: number;
+  }[];
   type: InvoiceType;
   paymentStatus: PaymentStatus;
   invoiceNumber: string;
@@ -37,9 +40,14 @@ export interface CreateInvoice {
     phoneNumber: string;
     _id: string;
   };
-  products: string[];
+  products: {
+    productId: string;
+    quantity: string | number;
+  }[];
   type: string;
   paymentStatus: string;
+  productsData?: any[];
+  invoiceNumber?: string;
 }
 
 export interface IInvoiceParams extends IParams {

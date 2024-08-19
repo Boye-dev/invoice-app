@@ -42,6 +42,14 @@ export const createInvoice = async (payload: CreateInvoice) => {
   return res.data;
 };
 
+export const sendEmail = async (formData: FormData) => {
+  const res = await Api.post<ApiResponse<undefined>>(
+    "/users/send-email",
+    formData
+  );
+  return res.data;
+};
+
 export const editInvoice = async (
   payload: Partial<CreateInvoice> & { id: string }
 ) => {

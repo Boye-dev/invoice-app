@@ -25,7 +25,7 @@ export const getRefreshToken = () => {
   const token = localStorage.getItem("refreshToken");
   return token;
 };
-export function getDecodedRefreshJwt(tkn = ""): IUserDecoded {
+export function getDecodedRefreshJwt(tkn = ""): IUserDecoded | null {
   try {
     const token = getRefreshToken();
     const t = token || tkn;
@@ -41,8 +41,13 @@ export const getDecodedJwt = (newToken?: string): IUserDecoded | null => {
     return decoded;
   }
   if (token) {
-    const decoded: IUserDecoded = jwtDecode(token);
-    return decoded;
+    try {
+      const decoded: IUserDecoded = jwtDecode(token);
+      return decoded;
+    } catch (error) {
+      removeToken();
+      window.location.reload();
+    }
   }
   return null;
 };
