@@ -2,6 +2,14 @@
 
 This is a web application for managing invoices built with React and TypeScript. The app provides features such as creating, viewing, and managing invoices, with a modern UI built using Tailwind CSS.
 
+
+# Hosted Link:
+
+   ```bash
+   https://boye-dev-invoice-app.vercel.app/
+   ```
+
+   
 ## Table of Contents
 
 - [Folder Structure](#folder-structure)
@@ -54,7 +62,7 @@ Here's an overview of the folder structure of the project:
 - **File Upload**: Upload business logos and profile pictures.
 - **Form Handling**: Manage forms and validations using React Hook Form and Zod.
 - **API Integration**: Seamless integration with backend services using Axios.
-- **Notifications**: Real-time notifications using React Toastify.
+- **Notifications**: Notifications using React Toastify.
 
 ## Installation
 
@@ -100,6 +108,7 @@ Here's an overview of the folder structure of the project:
 - **Axios**: Make HTTP requests to backend services.
 - **JWT Decode**: Decode JWT tokens.
 - **TanStack React Query**: Manage server state.
+- **HTML2Pdf**: Generate pdf.
 - **Zod**: Validation and type checking for forms.
 
 ## Development Dependencies
