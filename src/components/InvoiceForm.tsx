@@ -178,7 +178,11 @@ const InvoiceForm = ({
                             i + 1 && {
                             render: () => (
                               <p
-                                className="ml-2"
+                                onClick={() => {
+                                  item && setValue("client", item);
+                                  trigger("client");
+                                }}
+                                className="p-2 hover:bg-slate-100 cursor-pointer"
                                 ref={ref}
                               >{`${item?.firstname} ${item?.lastname}`}</p>
                             ),
